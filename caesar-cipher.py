@@ -1,7 +1,6 @@
 result = []
 text = input("Enter text\n ")
 key = int(input("Enter the key value \n"))
-
 for char in text:
     if char.islower():
         base = ord('a')
