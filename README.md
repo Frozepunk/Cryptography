@@ -1,5 +1,23 @@
 # Cryptography
-## caeser cipher
+
+## Caeser Cipher
+Imagine you have a **secret message**, and you want to hide it so only certain people can read it. One simple way to do this is using a **Caesar cipher**. Here's how it works:
+
+## 1. Shift the Alphabet
+
+Choose a number to shift each letter in the alphabet. For example, if you choose a shift of **3**, then:
+- 'A' becomes 'D'
+- 'B' becomes 'E'
+- and so on.
+
+## 2. Encode the Message
+
+Write your message using the shifted alphabet. For example, if your message is **"HELLO"** and your shift is **3**, you would encode it as **"KHOOR"**.
+
+## 3. Decode the Message
+
+To read the message, the person needs to know the shift number. They then reverse the process, shifting letters back to the original alphabet.
+
 
 ```def caesar_cipher():
     text = input("Enter text: ")
