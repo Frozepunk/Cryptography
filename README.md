@@ -1,5 +1,5 @@
 # Cryptography
-## ceasar cipher
+## caeser cipher
 
 ```def caesar_cipher():
     text = input("Enter text: ")
