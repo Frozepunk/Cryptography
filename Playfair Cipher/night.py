@@ -1,5 +1,5 @@
 def create_5x5_matrix(keyword):
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'  # 'j' is omitted
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'  
     keyword = "".join(dict.fromkeys(keyword.lower()))  # Remove duplicates
     matrix = []
     for letter in keyword:
