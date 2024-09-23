@@ -1,6 +1,6 @@
 def create_5x5_matrix(keyword):
     alphabet = 'abcdefghijklmnopqrstuvwxyz'  
-    keyword = "".join(dict.fromkeys(keyword.lower()))  # Remove duplicates
+    keyword = "".join(dict.fromkeys(keyword.lower()))
     matrix = []
     for letter in keyword:
         if letter in alphabet and letter not in matrix:
@@ -24,20 +24,17 @@ def preprocess_text(text):
     while i < len(text):
         processed_text.append(text[i])
         if i + 1 < len(text) and text[i] == text[i + 1]:
-            processed_text.append('x')  # Add 'x' between repeated letters
-        i += 1
+            processed_text.append('x') 
     if len(processed_text) % 2 != 0:
-        processed_text.append('x')  # Add 'x' if the text length is odd
+        processed_text.append('x') 
     return processed_text
 
 def postprocess_text(text):
-    # Remove 'x' padding between duplicate letters if it was added during encryption
     processed_text = []
     i = 0
     while i < len(text):
         processed_text.append(text[i])
         if i + 1 < len(text) and text[i] == text[i + 1] and text[i+1] == 'x':
-            # Skip the 'x' between repeated letters
             i += 1
         i += 1
     return ''.join(processed_text)
@@ -51,12 +48,8 @@ def playfair_cipher(matrix, text, mode='encrypt'):
         a, b = processed_text[i], processed_text[i + 1]
         r1, c1 = find_position(matrix, a)
         r2, c2 = find_position(matrix, b)
-        
-        # Ensure that both letters are found in the matrix
         if r1 is None or r2 is None:
             raise ValueError(f"Letter '{a}' or '{b}' not found in the matrix.")
-        
-        # Determine the result based on the mode
         if r1 == r2:
             if mode == 'encrypt':
                 new_a = matrix[r1][(c1 + 1) % 5]
