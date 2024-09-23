@@ -1,3 +1,4 @@
+# Key matrix creation
 def create_5x5_matrix(keyword):
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     keyword = "".join(dict.fromkeys(keyword.lower()))
@@ -15,3 +16,4 @@ keyword = input("Enter a keyword: ")
 matrix_5x5 = create_5x5_matrix(keyword)
 for row in matrix_5x5:
     print(" ".join(row))
+# adding the rules of playfair cipher 
