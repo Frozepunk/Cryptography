@@ -99,7 +99,7 @@
 #     print(f"{encrypted_pair} -> {original_pair}")
 
 def create_5x5_matrix(keyword):
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'  # 'j' is omitted
+    alphabet = 'abcdefghiklmnopqrstuvwxyz'  # 'j' is omitted
     keyword = "".join(dict.fromkeys(keyword.lower()))  # Remove duplicates
     matrix = []
     for letter in keyword:
