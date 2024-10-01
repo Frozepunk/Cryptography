@@ -1,91 +1,62 @@
 import numpy as np
 
-def mod_inverse(a, m):
-    """Return the modular inverse of a under modulo m."""
-    a = a % m
-    for x in range(1, m):
-        if (a * x) % m == 1:
-            return x
-    return None
+def letter_to_num(letter):
+    return ord(letter.upper()) - ord('A')
 
-def create_key_matrix(key):
-    """Create a 3x3 key matrix from the key string."""
-    key_matrix = np.array([[ord(key[0]) - ord('A'), ord(key[1]) - ord('A'), ord(key[2]) - ord('A')],
-                            [ord(key[3]) - ord('A'), ord(key[4]) - ord('A'), ord(key[5]) - ord('A')],
-                            [ord(key[6]) - ord('A'), ord(key[7]) - ord('A'), ord(key[8]) - ord('A')]])
-    return key_matrix
+def num_to_letter(num):
+    return chr((num % 26) + ord('A'))
 
-def encrypt(plaintext, key):
-    """Encrypt the plaintext using the Hill cipher."""
-    key_matrix = create_key_matrix(key)
-    plaintext = plaintext.upper().replace(" ", "")
+def encrypt_block(plain_block, key_matrix):
+    print(f"\nEncrypting block: {plain_block}")
+    plain_numbers = [letter_to_num(c) for c in plain_block]
+    print(f"Corresponding numbers for block '{plain_block}': {plain_numbers}")
+
+    # Convert the plaintext block into a column vector
+    plain_vector = np.array(plain_numbers).reshape(-1, 1)
+    print(f"\nPlaintext matrix (column vector):\n{plain_vector}\n")
     
-    # Padding the plaintext if necessary
-    while len(plaintext) % 3 != 0:
-        plaintext += 'X'  # Padding with 'X'
+    print(f"Key matrix:\n{key_matrix}\n")
+    
+    # Perform the matrix multiplication
+    result = np.dot(key_matrix, plain_vector) % 26
+    print(f"Matrix multiplication result (mod 26):\n{result}")
+
+    encrypted_block = ''.join([num_to_letter(num[0]) for num in result])
+    print(f"Encrypted block: {encrypted_block}")
+    
+    return encrypted_block
+
+def hill_cipher_encrypt(plaintext, key_matrix):
+    block_size = key_matrix.shape[0]
+    
+    if len(plaintext) % block_size != 0:
+        plaintext += 'X' * (block_size - len(plaintext) % block_size)
+    print(f"\nPadded plaintext: {plaintext}")
 
     ciphertext = ''
-    
-    for i in range(0, len(plaintext), 3):
-        # Create a vector from the plaintext characters
-        vector = np.array([[ord(plaintext[i]) - ord('A')],
-                           [ord(plaintext[i+1]) - ord('A')],
-                           [ord(plaintext[i+2]) - ord('A')]])
-
-        # Encrypt the vector
-        encrypted_vector = np.dot(key_matrix, vector) % 26
-        
-        # Convert back to characters
-        ciphertext += chr(encrypted_vector[0][0] + ord('A'))
-        ciphertext += chr(encrypted_vector[1][0] + ord('A'))
-        ciphertext += chr(encrypted_vector[2][0] + ord('A'))
+    for i in range(0, len(plaintext), block_size):
+        block = plaintext[i:i + block_size]
+        ciphertext += encrypt_block(block, key_matrix)
     
     return ciphertext
 
-def decrypt(ciphertext, key):
-    """Decrypt the ciphertext using the Hill cipher."""
-    key_matrix = create_key_matrix(key)
-    det = int(np.round(np.linalg.det(key_matrix))) % 26
-    
-    # Find the modular inverse of the determinant
-    det_inv = mod_inverse(det, 26)
-    
-    # Find the adjugate matrix
-    adjugate_matrix = np.array([[key_matrix[1][1] * key_matrix[2][2] - key_matrix[1][2] * key_matrix[2][1],
-                                  key_matrix[0][2] * key_matrix[2][1] - key_matrix[0][1] * key_matrix[2][2],
-                                  key_matrix[0][1] * key_matrix[1][2] - key_matrix[0][2] * key_matrix[1][1]],
-                                 [key_matrix[1][2] * key_matrix[2][0] - key_matrix[1][0] * key_matrix[2][2],
-                                  key_matrix[0][0] * key_matrix[2][2] - key_matrix[0][2] * key_matrix[2][0],
-                                  key_matrix[0][2] * key_matrix[1][0] - key_matrix[0][0] * key_matrix[1][2]],
-                                 [key_matrix[1][0] * key_matrix[2][1] - key_matrix[1][1] * key_matrix[2][0],
-                                  key_matrix[0][1] * key_matrix[2][0] - key_matrix[0][0] * key_matrix[2][1],
-                                  key_matrix[0][0] * key_matrix[1][1] - key_matrix[0][1] * key_matrix[1][0]]]) % 26
-    
-    inverse_key_matrix = (det_inv * adjugate_matrix) % 26
-    
-    # Prepare to decrypt
-    ciphertext = ciphertext.upper().replace(" ", "")
-    plaintext = ''
-    
-    for i in range(0, len(ciphertext), 3):
-        vector = np.array([[ord(ciphertext[i]) - ord('A')],
-                           [ord(ciphertext[i+1]) - ord('A')],
-                           [ord(ciphertext[i+2]) - ord('A')]])
-        
-        decrypted_vector = np.dot(inverse_key_matrix, vector) % 26
-        
-        plaintext += chr(decrypted_vector[0][0] + ord('A'))
-        plaintext += chr(decrypted_vector[1][0] + ord('A'))
-        plaintext += chr(decrypted_vector[2][0] + ord('A'))
-    
-    return plaintext.replace('X', '')  # Remove padding
+def get_key_matrix(matrix_size):
+    print(f"\nEnter the key matrix of size {matrix_size}x{matrix_size}:")
+    key_matrix = []
+    for i in range(matrix_size):
+        row = list(map(int, input(f"Enter row {i + 1} values separated by space: ").split()))
+        key_matrix.append(row)
+    return np.array(key_matrix)
 
-# Example usage
-key = "GYBNQKURC"  # 3x3 key matrix
-plaintext = "HELLO"
-ciphertext = encrypt(plaintext, key)
-decrypted_text = decrypt(ciphertext, key)
+def main():
+    matrix_size = int(input("Enter the size of the key matrix: "))
+    key_matrix = get_key_matrix(matrix_size)
 
-print(f"Plaintext: {plaintext}")
-print(f"Ciphertext: {ciphertext}")
-print(f"Decrypted: {decrypted_text}")
+    plaintext = input("Enter the plaintext: ").upper().replace(" ", "")
+    print(f"\nOriginal plaintext: {plaintext}")
+
+    ciphertext = hill_cipher_encrypt(plaintext, key_matrix)
+    print(f"\nEncrypted text: {ciphertext}\n")
+
+if __name__ == "__main__":
+    main()
