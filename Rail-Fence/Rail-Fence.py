@@ -30,7 +30,8 @@ def rail_fence_decrypt(ciphertext, key):
     for row in range(key):
         for col in range(len(ciphertext)):
             if fence[row][col] == '*' and index < len(ciphertext):
-                fence[row][col] = ciphertext[index]
+                fence[
+                    row][col] = ciphertext[index]
                 index += 1
 
     decrypted_text = []
