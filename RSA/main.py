@@ -1,25 +1,40 @@
-from sympy import gcd, mod_inverse
-plain_text = input("Enter the plain text: ")
-p = int(input("Enter a prime number p: "))
-q = int(input("Enter a prime number q: "))
-plain_text_nums = [ord(char) for char in plain_text]
-print(f"\nPlain Text (as numbers): {plain_text_nums}")
+import math
+from sympy import mod_inverse
+
+def text_to_numbers(text):
+    return [ord(char) - ord('a') for char in text.lower() if 'a' <= char <= 'z']
+
+def numbers_to_text(numbers):
+    return ''.join(chr(num + ord('a')) for num in numbers)
+
+p = int(input("Enter the value of p (prime number): "))
+q = int(input("Enter the value of q (prime number): "))
 n = p * q
-euler_n = (p - 1) * (q - 1)
-print(f"\nValue of n (p * q) = {n}")
-print(f"Euler's function ϕ(n) = (p-1)(q-1) = {euler_n}")
-print("\nSelecting e such that 1 < e < ϕ(n) and gcd(e, ϕ(n)) = 1...")
-for e in range(2, euler_n):
-    if gcd(euler_n, e) == 1:
-        break
-    
-print(f"Selected e = {e}")
-d = mod_inverse(e, euler_n)
-print(f"Calculated d (modular inverse of e mod ϕ(n)) = {d}")
-print(f"\nPublic Key (PU) = ({e}, {n})")
-print(f"Private Key (PR) = ({d}, {n})")
-cipher_text_nums = [pow(num, e, n) for num in plain_text_nums]
-print(f"\nCiphertext (C) = {cipher_text_nums}")
-decrypted_text_nums = [pow(c, d, n) for c in cipher_text_nums]
-decrypted_text = ''.join(chr(num) for num in decrypted_text_nums)
-print(f"Decrypted Plain Text (M) = {decrypted_text}")
+phi = (p - 1) * (q - 1)
+print("n =", n)
+print("phi(n) =", phi)
+
+e = int(input("Enter the value of e (1 < e < phi(n)): "))
+while e >= phi or math.gcd(e, phi) != 1:
+    print("Invalid e. Ensure 1 < e < phi(n) and gcd(e, phi) = 1.")
+    e = int(input("Enter a valid value for e: "))
+print("e =", e)
+
+d = mod_inverse(e, phi)
+print("d =", d)
+
+print(f'Public key: ({e}, {n})')
+print(f'Private key: ({d}, {n})')
+
+text = input("Enter a text to encrypt (only alphabets): ")
+numbers = text_to_numbers(text)
+print("Numerical representation of text:", numbers)
+
+encrypted_numbers = [pow(num, e, n) for num in numbers]
+print("Encrypted numerical values:", encrypted_numbers)
+
+decrypted_numbers = [pow(num, d, n) for num in encrypted_numbers]
+print("Decrypted numerical values:", decrypted_numbers)
+
+decrypted_text = numbers_to_text(decrypted_numbers)
+print("Decrypted text:", decrypted_text)
